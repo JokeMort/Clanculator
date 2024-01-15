@@ -22,26 +22,45 @@ public class MainWindow extends JFrame implements ActionListener {
     JButton divideButton = new JButton("/");
     JButton equalsButton = new JButton("=");
     JButton dotButton = new JButton(".");
+    JButton memoryAddButton = new JButton("M+");
+    JButton memoryCallButton = new JButton("M");
+    JButton cencelLastButton = new JButton("C");
+    JButton cencelButton = new JButton("CE");
     String currentExpression = "";
     String choosenEquasion = "";
     String tempString = "";
+    String memoryString = "";
+    JLabel memoryScreen;
+    JLabel tempScreen;
 
     MainWindow() {
         this.setTitle("Clanculator");
-        this.setLayout(new GridLayout(2, 1));
+        this.setLayout(new GridLayout(3, 1));
         this.setMinimumSize(new Dimension(500, 500));
         ImageIcon icon = new ImageIcon("src\\logo.jpg");
         this.setIconImage(icon.getImage());
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(1, 4));
+        memoryScreen = new JLabel("");
+        tempScreen = new JLabel("");
+        topPanel.add(new JLabel("Memory: "));
+        topPanel.add(memoryScreen);
+        topPanel.add(new JLabel("Last number:"));
+        topPanel.add(tempScreen);
         JPanel screePanel = new JPanel();
         screePanel.setLayout(new GridLayout(1, 1));
         JPanel keyboardPanel = new JPanel();
-        keyboardPanel.setLayout(new GridLayout(4, 4));
+        keyboardPanel.setLayout(new GridLayout(5, 4));
 
         screenField = new JTextField();
         screenField.setFont(new Font("Times New Roman", Font.PLAIN, 70));
         screenField.setEditable(false);
         screePanel.add(screenField);
 
+        keyboardPanel.add(memoryAddButton);
+        keyboardPanel.add(memoryCallButton);
+        keyboardPanel.add(cencelLastButton);
+        keyboardPanel.add(cencelButton);
         keyboardPanel.add(sevenButton);
         keyboardPanel.add(eightButton);
         keyboardPanel.add(nineButton);
@@ -59,6 +78,10 @@ public class MainWindow extends JFrame implements ActionListener {
         keyboardPanel.add(equalsButton);
         keyboardPanel.add(divideButton);
 
+        memoryAddButton.addActionListener(this);
+        memoryCallButton.addActionListener(this);
+        cencelButton.addActionListener(this);
+        cencelLastButton.addActionListener(this);
         zeroButton.addActionListener(this);
         oneButton.addActionListener(this);
         twoButton.addActionListener(this);
@@ -76,6 +99,7 @@ public class MainWindow extends JFrame implements ActionListener {
         equalsButton.addActionListener(this);
         dotButton.addActionListener(this);
 
+        this.add(topPanel);
         this.add(screePanel);
         this.add(keyboardPanel);
         this.setVisible(true);
@@ -83,6 +107,23 @@ public class MainWindow extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == memoryAddButton) {
+            memoryString = Calculations.makeCalculations(Integer.toString(0), currentExpression, "+");
+            memoryScreen.setText(memoryString);
+        }
+        if (e.getSource() == memoryCallButton) {
+            currentExpression = memoryString;
+        }
+        if (e.getSource() == cencelLastButton) {
+            currentExpression = currentExpression.substring(0, currentExpression.length() - 1);
+        }
+        if (e.getSource() == cencelButton) {
+            currentExpression = "";
+            tempString = "";
+            memoryString = "";
+            memoryScreen.setText("");
+            tempScreen.setText("");
+        }
         if (e.getSource() == zeroButton) {
             currentExpression += "0";
         }
@@ -118,17 +159,20 @@ public class MainWindow extends JFrame implements ActionListener {
         }
         if (e.getSource() == equalsButton) {
             currentExpression = Calculations.makeCalculations(tempString, currentExpression, choosenEquasion);
+            tempScreen.setText("");
             choosenEquasion = "";
         }
         if (e.getSource() == plusButton) {
             choosenEquasion = "+";
             tempString = currentExpression;
+            tempScreen.setText(tempString);
             currentExpression = "";
         }
         if (e.getSource() == minusButton) {
             if (!currentExpression.isEmpty()) {
                 choosenEquasion = "-";
                 tempString = currentExpression;
+                tempScreen.setText(tempString);
                 currentExpression = "";
             } else {
                 currentExpression += "-";
@@ -137,11 +181,13 @@ public class MainWindow extends JFrame implements ActionListener {
         if (e.getSource() == multiplyButton) {
             choosenEquasion = "*";
             tempString = currentExpression;
+            tempScreen.setText(tempString);
             currentExpression = "";
         }
         if (e.getSource() == divideButton) {
             choosenEquasion = "/";
             tempString = currentExpression;
+            tempScreen.setText(tempString);
             currentExpression = "";
         }
         screenField.setText(currentExpression);
